@@ -1,0 +1,221 @@
+<?php
+
+function data_catalog_example_page() {
+	//Function to perform GET 
+	
+  $header = array('id','instance_id','instance_type','instance_owner','expirationDate','terminationDate','purpose','project','environment','ip_address','ip_public','keyName','cloud','status','update');
+  
+  $request = drupal_http_request('https://demo0399800.mockable.io/catalog/getall');
+  
+  $response_json = drupal_json_decode($request->data);
+  
+  $form['edit'] = array(
+    '#type' => 'edit',
+    '#value' => 'edit',
+	//'#submit' => array('data_catalog_submit_handler'),
+	);
+    
+   $rows = array();
+    
+   $output = theme('table', array('header' => $header,
+                  	         'rows' => $response_json ));
+  $output .= theme('pager');
+
+  return $output;
+  
+  
+}
+
+function data_catalog_block_info() {
+	//Creating Blocks
+   $blocks['data_catalog'] = array(
+    'info' => t('Data Catalog'),
+    'cache' => DRUPAL_NO_CACHE
+  );
+  
+  $blocks['data_catalog_add_instance'] = array(
+    'info' => t('Data Catalog Add Instance'),
+    'cache' => DRUPAL_NO_CACHE
+  );
+  
+
+  return $blocks;
+}
+
+function data_catalog_block_view($delta) {
+	//Creating views to the block and providing with data to display
+
+  $block = array();
+
+  switch ($delta) {
+    case 'data_catalog':
+      $block['content'] = _data_catalog_response_content();
+      
+	  break;
+	  case 'data_catalog_add_instance':
+	  $block['content'] = _data_catalog_add_instance_form();
+	  
+      break;
+  }
+  return $block;
+}
+
+function _data_catalog_response_content() {
+	//Output of the GET function 
+
+  $output = data_catalog_example_page();
+
+  return $output;
+
+}
+
+
+function data_catalog_menu(){
+	$items['node/5'] = array(
+	'title' => 'Form API Example',
+	'description' => 'N/a',
+	'page callback' => 'drupal_get_form',
+	'page arguments' => array('_data_catalog_add_instance_form'),
+	'access callback' => TRUE,
+	);
+	return $items;
+		
+}
+
+function _data_catalog_add_instance_form($form, &$form_submit) {
+	
+	//Creating a Form 
+	
+	$form['id'] = array(
+    '#title' => t('Id'),
+	'#type' => 'textfield',
+    );
+    
+	$form['instance_id'] = array(
+    '#title' => t('Instance Id'),
+	'#type' => 'textfield',
+    );
+	
+	$form['instance_type'] = array(
+	'#title' => t('Instance Type'),
+	'#type' => 'textfield',
+    );
+	
+	$form['instance_owner'] = array(
+	'#title' => t('Instance Owner'),
+	'#type' => 'textfield',
+    );
+	
+	$form['expiration_datec'] = array(
+	'#title' => t('Expiration Date'),
+	'#type' => 'textfield',
+	);
+	
+	$form['termination_datec'] = array(
+	'#title' => t('Termination Date'),
+	'#type' => 'textfield',
+	);
+	
+	$form['purpose'] = array(
+	'#title' => t('Purpose'),
+	'#type' => 'textfield',
+	);
+	
+	$form['project'] = array(
+	'#title' => t('Project'),
+	'#type' => 'textfield',
+	);
+	
+	$form['environment'] = array(
+	'#title' => t('Environment'),
+	'#type' => 'textfield',
+	);
+	
+	$form['ip_address'] = array(
+	'#title' => t('IP Address'),
+	'#type' => 'textfield',
+	);
+	
+	$form['ip_public'] = array(
+	'#title' => t('IP Public'),
+	'#type' => 'textfield',
+	);
+	
+	$form['key_name'] = array(
+	'#title' => t('Key Name'),
+	'#type' => 'textfield',
+	);
+	
+	$form['cloud'] = array(
+	'#title' => t('Cloud'),
+	'#type' => 'textfield',
+	);
+	
+	$form['status'] = array(
+	'#title' => t('Status'),
+	'#type' => 'textfield',
+	);
+	  
+	$form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Submit',
+	'#submit' => array('data_catalog_submit_handler'),
+	);
+  
+  
+
+  return $form;
+  
+}
+
+function data_catalog_submit_handler($form, &$form_state)
+{
+  $submit_values = array(
+
+  'id' => $form_state['values']['id'],
+	'instance_id' => $form_state['values']['instance_id'],
+	'instance_type' => $form_state['values']['instance_type'],
+	'instance_owner' => $form_state['values']['instance_owner'],
+	'expiration_datec' => $form_state['values']['expiration_datec'],
+	'termination_datec' => $form_state['values']['termination_datec'],
+	'purpose' => $form_state['values']['purpose'],
+	'project' => $form_state['values']['project'],
+	'environment' => $form_state['values']['environment'],
+	'ip_address' => $form_state['values']['ip_address'],
+	'ip_public' => $form_state['values']['ip_public'],
+	'key_name' => $form_state['values']['key_name'],
+	'cloud' => $form_state['values']['cloud'],
+	'status' => $form_state['values']['status'],
+  );
+
+  $options = array(
+    'headers' => array(
+      'Content-Type:application/json',
+     ),
+     'method' => 'POST',
+    'data'=> drupal_json_encode($submit_values),
+  );
+
+  $url = 'http://dev-api.sidgs.net:9002/bhargav-npi';
+
+  $response = drupal_http_request($url, $options);
+
+  if(isset ($response->data))
+  {
+    $json_response = drupal_json_decode($response->data);
+
+    if($json_response['success'] == "success")
+      drupal_set_message(t("Form was submitted successfully"), 'status', FALSE);
+    else if ($json_response['error'] == "error")
+      drupal_set_message(t("Form was not submitted successfully. Please try after some time."), 'error', FALSE);
+  
+ 
+  }
+}
+
+  
+
+
+
+
+
