@@ -1,0 +1,106 @@
+<?php
+
+function data_catalog_schema() {
+$schema['data_catalog_reports'] = array(
+    'description' => t('A table to store the Json data.'),
+    'fields' => array(
+      'instance_id' => array(
+	  'description' => 'Primary Key',
+        'type' => 'varchar',
+        'length' => '32',
+        'not null' => TRUE,
+        
+      ),
+      'instance_type' => array(
+	  'description' => t('Instance Type'),
+          'type' => 'varchar',
+        'length' => '32',
+        'not null' => TRUE,
+        
+      ),
+      'instance_owner' => array(
+	  'description' => t('Instance Owner'),
+          'type' => 'varchar',
+        'length' => '32',
+        'not null' => TRUE,
+        
+       
+      ),
+      'expirationDate' => array(
+	  'description' => t('Expiration Date'),
+          'type' => 'varchar',
+        'length' => '32',
+        'not null' => TRUE,
+      ),
+	    'terminationDate' => array(
+		'description' => t('Termination Date'),
+          'type' => 'varchar',
+        'length' => '32',
+        'not null' => TRUE,
+       
+      ),
+      'purpose' => array(
+	  'description' => t('Purpose'),
+         'type' => 'varchar',
+        'length' => '32',
+        'not null' => TRUE,
+       
+      ),
+      'project' => array(
+	  'description' => t('Project'),
+          'type' => 'varchar',
+        'length' => '32',
+        'not null' => TRUE,
+      
+      ),
+      'environment' => array(
+	  'description' => t('Environment'),
+          'type' => 'varchar',
+        'length' => '32',
+        'not null' => TRUE,
+      ),
+      'ip_address' => array(
+	  'description' => t('Ip Address'),
+          'type' => 'varchar',
+        'length' => '32',
+        'not null' => TRUE,
+      ),
+	  'ip_public' => array(
+	  'description' => t('IP Public'),
+          'type' => 'varchar',
+        'length' => '32',
+        'not null' => TRUE,
+        
+      ),
+      'keyName' => array(
+	  'description' => t('Key Name'),
+        'type' => 'varchar',
+        'length' => '32',
+        'not null' => TRUE,
+        ),
+      'cloud' => array(
+	  'description' => t('Cloud'),
+         'type' => 'varchar',
+        'length' => '32',
+        'not null' => TRUE,
+        
+      ),
+      'status' => array(
+	  'description' => t('Status'),
+          'type' => 'varchar',
+        'length' => '32',
+        'not null' => TRUE,
+      ),
+    ),
+   );
+  return $schema;
+}
+
+function data_catalog_create_table(){
+
+db_create_table('data_catalog_reports', $schema['data_catalog_reports']);
+
+}
+
+
+  
