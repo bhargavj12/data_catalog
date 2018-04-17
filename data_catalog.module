@@ -1,104 +1,185 @@
 <?php
 
-function data_catalog_example_page() {
-	//Function to perform GET 
-	
-  $header = array('id','instance_id','instance_type','instance_owner','expirationDate','terminationDate','purpose','project','environment','ip_address','ip_public','keyName','cloud','status','update');
-  
-  $request = drupal_http_request('https://demo0399800.mockable.io/catalog/getall');
-  
-  $response_json = drupal_json_decode($request->data);
-  
-  $form['edit'] = array(
-    '#type' => 'edit',
-    '#value' => 'edit',
-	//'#submit' => array('data_catalog_submit_handler'),
-	);
-    
-   $rows = array();
-    
-   $output = theme('table', array('header' => $header,
-                  	         'rows' => $response_json ));
-  $output .= theme('pager');
-
-  return $output;
-  
-  
-}
 
 function data_catalog_block_info() {
 	//Creating Blocks
    $blocks['data_catalog'] = array(
     'info' => t('Data Catalog'),
     'cache' => DRUPAL_NO_CACHE
-  );
+	);
   
-  $blocks['data_catalog_add_instance'] = array(
-    'info' => t('Data Catalog Add Instance'),
-    'cache' => DRUPAL_NO_CACHE
-  );
-  
-
   return $blocks;
 }
 
 function data_catalog_block_view($delta) {
 	//Creating views to the block and providing with data to display
-
+  drupal_add_js(drupal_get_path('module', 'data_catalog') . "data_catalog.js");
   $block = array();
 
   switch ($delta) {
     case 'data_catalog':
-      $block['content'] = _data_catalog_response_content();
-      
-	  break;
-	  case 'data_catalog_add_instance':
-	  $block['content'] = _data_catalog_add_instance_form();
-	  
-      break;
-  }
+    
+		$block['content'] = _data_catalog_response_content();
+		
+		break;
+	}
   return $block;
+}
+
+function data_catalog_example_page() {
+//Function to perform GET 
+	
+  $request = drupal_http_request('https://demo9041028.mockable.io/catalog/instances');
+  
+  $response_json = drupal_json_decode($request->data);
+  /*
+  $query = db_insert('data_catalog_reports')->fields(array( 'instance_id', 'instance_type', 'instance_owner', 'expirationDate', 'terminationDate', 'purpose', 'project', 'environment', 'ip_address', 'ip_public', 'keyName', 'cloud', 'status'));
+	
+	foreach ($response_json as $record){
+	
+		$query->values($record);
+	}
+	
+	$query->execute();
+*/
+	return $response_json;
 }
 
 function _data_catalog_response_content() {
 	//Output of the GET function 
+$header = array('Instance Id','Instance Type','Instance Owner','Expiration Date','Termination Date','Purpose','Project','Environment','Ip Address','Ip Public','Key Name','Cloud','Status','Update');
+  $json_output = data_catalog_example_page();
+  
+  $rows = array();
+   
+  $x = 0;
+  
+  	variable_del('opted');
+   
+   foreach($json_output as &$value){
+	  
+	
+	 
+	 
+	 array_push($value, '<a href=9 onclick()="Hello()">Edit'."$x".'</a>');
+	 //<button type="button" onclick()="data_catalog_setting_variable($x);" id=edit'."$x".'>Edit</button></a>');
+	/* onclick='."document.write(".'<?php data_catalog_setting_variable($x)?>'.")".'
+	 variable_set('opted', $x);
+	*/  
+	 
+	 
+	
+	$x = $x+1;
+		    
+	 }
+	 
+	
 
-  $output = data_catalog_example_page();
+	
+ 
+  //dpm($json_output);
+	 
+	 
+  $output = theme('table', array('header' => $header,
+                  	         'rows' => $json_output ));
+							 
 
+	
+   $output .= theme('pager');
+  
+  
   return $output;
 
 }
 
+function data_catalog_setting_variable(){
+	
+	$x = 56;
+
+}
+
+
+/*
+function data_catalog_update_report(){
+	
+	$query = db_query("SELECT * FROM data_catalog_reports");
+	
+	$database_results = array();
+	
+	foreach ($query as $row){
+		
+		$database_results[] = $row;
+		
+	}
+	
+	$json_data = data_catalog_example_page();
+	
+	if($json_data == $database_results){
+		
+		
+	}
+	
+	else{
+		
+	}
+	
+	 
+}
+
+
+*/
+function data_catalog_hello(){
+	$h = 'hello';
+	dpm($h);
+}
+
 
 function data_catalog_menu(){
-	$items['node/5'] = array(
-	'title' => 'Form API Example',
+	$items['node/9'] = array(
+	'title' => 'Update Catalog Entry',
 	'description' => 'N/a',
 	'page callback' => 'drupal_get_form',
-	'page arguments' => array('_data_catalog_add_instance_form'),
+	'page arguments' => array('_data_catalog_update_instance_form'),
 	'access callback' => TRUE,
-	);
+);
+		
 	return $items;
 		
 }
 
-function _data_catalog_add_instance_form($form, &$form_submit) {
-	
+
+
+function _data_catalog_update_instance_form($form, &$form_submit) {
+
+		
+		 $query = db_select('data_catalog_reports','v');
+		 $query->fields('v');
+		 $results=$query->execute()->fetchAll();
+		// $ar = json_decode($results, true);
+		 
+		 
+		//$query = db_select('data_catalog_reports', 'v');
+		//$query->fields('v', array( 'instance_id', 'instance_type', 'instance_owner', 'expirationDate', 'terminationDate', 'purpose', 'project', 'environment', 'ip_address', 'ip_public', 'keyName', 'cloud', 'status'));
+		//$result = $query->execute();
+		//while($record = $result->fetchAssoc()) {
+		//print_r($record);
+		//}
+		
+//dpm($results[0]->{'instance_id'});
+
+
+
 	//Creating a Form 
-	
-	$form['id'] = array(
-    '#title' => t('Id'),
-	'#type' => 'textfield',
-    );
-    
 	$form['instance_id'] = array(
     '#title' => t('Instance Id'),
 	'#type' => 'textfield',
+	'#disabled' => TRUE,
     );
 	
 	$form['instance_type'] = array(
 	'#title' => t('Instance Type'),
 	'#type' => 'textfield',
+	'#disabled' => TRUE,
     );
 	
 	$form['instance_owner'] = array(
@@ -134,45 +215,56 @@ function _data_catalog_add_instance_form($form, &$form_submit) {
 	$form['ip_address'] = array(
 	'#title' => t('IP Address'),
 	'#type' => 'textfield',
+	'#disabled' => TRUE,
 	);
 	
 	$form['ip_public'] = array(
 	'#title' => t('IP Public'),
 	'#type' => 'textfield',
+	'#disabled' => TRUE,
 	);
 	
 	$form['key_name'] = array(
 	'#title' => t('Key Name'),
 	'#type' => 'textfield',
+	'#disabled' => TRUE,
 	);
 	
 	$form['cloud'] = array(
 	'#title' => t('Cloud'),
 	'#type' => 'textfield',
+	'#disabled' => TRUE,
 	);
 	
-	$form['status'] = array(
-	'#title' => t('Status'),
-	'#type' => 'textfield',
-	);
 	  
 	$form['submit'] = array(
     '#type' => 'submit',
     '#value' => 'Submit',
-	'#submit' => array('data_catalog_submit_handler'),
+	'#submit' => array('data_catalog_update_submit_handler'),
 	);
+	
+	$y = variable_get('opted', 0);
+	$selected = (int)$y;
   
-  
+dpm($y);
+dpm($selected);
+	$form['instance_id']['#value'] = $results[$y]->{'instance_id'};
+	$form['instance_type']['#value'] = $results[$y]->{'instance_type'};
+	$form['ip_address']['#value'] = $results[$y]->{'ip_address'};
+	$form['ip_public']['#value'] = $results[$y]->{'ip_public'};
+	$form['key_name']['#value'] = $results[$y]->{'keyName'};
+	$form['cloud']['#value'] = $results[$y]->{'cloud'};
+
 
   return $form;
   
 }
 
-function data_catalog_submit_handler($form, &$form_state)
+function data_catalog_update_submit_handler($form, &$form_state)
 {
   $submit_values = array(
-
-  'id' => $form_state['values']['id'],
+		
+	'id' => $form_state['values']['id'],
 	'instance_id' => $form_state['values']['instance_id'],
 	'instance_type' => $form_state['values']['instance_type'],
 	'instance_owner' => $form_state['values']['instance_owner'],
@@ -185,14 +277,14 @@ function data_catalog_submit_handler($form, &$form_state)
 	'ip_public' => $form_state['values']['ip_public'],
 	'key_name' => $form_state['values']['key_name'],
 	'cloud' => $form_state['values']['cloud'],
-	'status' => $form_state['values']['status'],
+	
   );
 
   $options = array(
     'headers' => array(
       'Content-Type:application/json',
      ),
-     'method' => 'POST',
+     'method' => 'PUT',
     'data'=> drupal_json_encode($submit_values),
   );
 
@@ -213,9 +305,10 @@ function data_catalog_submit_handler($form, &$form_state)
   }
 }
 
-  
 
 
+
+	
 
 
 
